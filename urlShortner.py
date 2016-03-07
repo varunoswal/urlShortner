@@ -1,7 +1,10 @@
-from flask import Flask, render_template, request
-from flaskext.mysql import MySQL
 import string
-
+from math import floor
+from urlparse import urlparse
+from datetime import datetime
+from flask.ext.cors import CORS
+from flaskext.mysql import MySQL
+from flask import Flask, render_template, request, redirect, jsonify
 # root@localhost:shorturl;
 
 mysql = MySQL()
@@ -11,26 +14,90 @@ app.config['MYSQL_DATABASE_PASSWORD'] = 'shorturl'
 app.config['MYSQL_DATABASE_DB'] = 'urlDB'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
+host = 'http://localhost:5000/'
+CORS(app)
 
+# Database queries
+# get top 10 urls by views in last month
 
-@app.route('/')
-def hello_world():
-    # return 'Hello World!'
+# get last 100 urls that were inserted
 
-    cursor = mysql.get_db().cursor()
-    cursor.execute("SELECT * from tbl_url")
-    data = cursor.fetchall()
-    print len(data)
-    print data
+# get number of visits when given a shortURL
+
+# Base62 Encoder
+def toBase62(num, b = 62):
+    if b <= 0 or b > 62:
+        return 0
+    base = string.digits + string.lowercase + string.uppercase
+    r = num % b
+    res = base[r]
+    q = floor(num / b)
+
+    while q:
+        r = q % b
+        q = floor(q / b)
+        res = base[int(r)] + res
+    return res
+
+# Base62 Decoder
+def toBase10(num, b = 62):
+    base = string.digits + string.lowercase + string.uppercase
+    limit = len(num)
+    res = 0
+    for i in xrange(limit):
+        res = b * res + base.find(num[i])
+    return res
+
+# Serve landing page
+@app.route('/', methods=['GET', 'POST'])
+def home():
     return render_template('index.html')
 
-if __name__ == '__main__':
-    app.run()
+# insert method takes in og url -> returns id of inserted record -> encode to b62 -> update shorturl in db ?
+@app.route('/getShortURL', methods=['POST'])
+def getShortURL():
+    if request.method == 'POST':
+        original_url = request.form['url']
+        if urlparse(original_url).scheme == '':
+            original_url = 'http://' + original_url
 
-# CREATE TABLE `urlDB`.`tbl_url` (
-#   `id` MEDIUMINT NOT NULL AUTO_INCREMENT,
-#   `long_url` VARCHAR(500) NULL,
-#   `short_url` VARCHAR(6) NULL,
-#   `num_visits` MEDIUMINT(45) NULL,
-#   `insert_date`  DATETIME NOT NULL,
-#   PRIMARY KEY (`id`));
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        original_url = conn.escape_string(original_url)
+        ts = str(datetime.now())[0:-7]
+        query = "INSERT INTO tbl_url (long_url, num_visits, insert_date) VALUES ('%s','%s','%s')" % (original_url, 0, ts)
+        cursor.execute(query)
+        lastID = cursor.lastrowid
+
+        # Commit and close connections
+        conn.commit()
+        cursor.close()
+        conn.close()
+        encoded_string = toBase62(lastID)
+
+        original_url = request.form['url']
+        shortURL = host + encoded_string
+        return jsonify({'url': shortURL})
+
+# Routing method that decouples 6 char base62 encoding -> retrieves og url and routes window to it -> increments visit count by 1
+@app.route('/<shortURL>')
+def useShortURL(shortURL):
+    print shortURL
+    urlIndex = toBase10(shortURL)
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    query = "SELECT long_url FROM tbl_url WHERE id=%d"%(urlIndex)
+    print query
+    cursor.execute(query)
+    url = cursor.fetchone()
+
+    print url
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return redirect(url)
+
+if __name__ == '__main__':
+    app.run(host="0.0.0.0", port=5000, debug=False)
