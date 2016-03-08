@@ -47,10 +47,48 @@ def toBase10(num, b = 62):
         res = b * res + base.find(num[i])
     return res
 
+def retreiveURL(urlIndex):
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    query = "SELECT long_url FROM tbl_url WHERE id=%d"%(urlIndex)
+    cursor.execute(query)
+    redirectURL = "http://localhost:5000"
+
+    try:
+        redirectURL = cursor.fetchone()[0]
+        print redirectURL       
+    except Exception as e:
+        print e
+
+    if redirectURL != "http://localhost:5000":
+        query = "UPDATE tbl_url SET num_visits = num_visits + 1 WHERE id=%d"%(urlIndex)
+        cursor.execute(query)
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return redirectURL
+
+def insertLongURL(original_url):
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    original_url = conn.escape_string(original_url)
+    ts = str(datetime.now())[0:-7]
+    query = "INSERT INTO tbl_url (long_url, num_visits, insert_date) VALUES ('%s','%s','%s')" % (original_url, 0, ts)
+    cursor.execute(query)
+    lastID = cursor.lastrowid
+    
+    # Commit and close connections
+    conn.commit()
+    cursor.close()
+    conn.close()
+    encoded_string = toBase62(lastID)
+    shortURL = host + encoded_string
+    return shortURL
+
 # Serve landing page
 @app.route('/', methods=['GET'])
 def home():
-    print 'here'
     return render_template('index.html')
 
 # insert method takes in og url -> returns id of inserted record -> encode to b62 -> update shorturl in db ?
@@ -58,53 +96,26 @@ def home():
 def getShortURL():
     if request.method == 'POST':
         original_url = request.form['url']
+        
         if urlparse(original_url).scheme == '':
             original_url = 'http://' + original_url
 
-        conn = mysql.connect()
-        cursor = conn.cursor()
-        original_url = conn.escape_string(original_url)
-        ts = str(datetime.now())[0:-7]
-        query = "INSERT INTO tbl_url (long_url, num_visits, insert_date) VALUES ('%s','%s','%s')" % (original_url, 0, ts)
-        cursor.execute(query)
-        lastID = cursor.lastrowid
-
-        # Commit and close connections
-        conn.commit()
-        cursor.close()
-        conn.close()
-        encoded_string = toBase62(lastID)
-
-        original_url = request.form['url']
-        shortURL = host + encoded_string
+        shortURL = insertLongURL(original_url)
         return jsonify({'url': shortURL})
 
 # Routing method retrieves og url and routes window to it -> increments visit count by 1
 @app.route('/<shortURL>')
 def useShortURL(shortURL):
     if (shortURL != "None" and shortURL != "favico.ico"):
-        redirectURL = "http://localhost:5000"
-        urlIndex = toBase10(shortURL)
-        conn = mysql.connect()
-        cursor = conn.cursor()
-        query = "SELECT long_url FROM tbl_url WHERE id=%d"%(urlIndex)
-        cursor.execute(query)
         
-        try:
-            redirectURL = cursor.fetchone()[0]
-            print redirectURL    
-        except Exception as e:
-            print e
+        urlIndex = toBase10(shortURL)
+        redirectURL = retreiveURL(urlIndex)
+        if(redirectURL==host[0:-1]):
+            print 'no link found'
+        else:
+            return redirect(redirectURL)
 
-        conn.commit()
-        cursor.close()
-        conn.close()
-
-        return redirect(redirectURL)
     return render_template('index.html')
 
-
-
 if __name__ == '__main__':
-    print "starting"
     app.run(host="0.0.0.0", port=5000, debug=True)
