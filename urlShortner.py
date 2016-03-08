@@ -4,7 +4,7 @@ from flaskext.mysql import MySQL
 import string
 from math import floor
 from urlparse import urlparse
-from datetime import datetime
+from datetime import datetime, timedelta
 # root@localhost:shorturl;
 
 mysql = MySQL()
@@ -16,10 +16,6 @@ app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
 host = 'http://localhost:5000/'
 CORS(app)
-
-# Database queries
-# get top 10 urls by views in last month
-# get last 100 urls that were inserted
 
 # Base62 Encoder
 def toBase62(num, b = 62):
@@ -45,6 +41,7 @@ def toBase10(num, b = 62):
         res = b * res + base.find(num[i])
     return res
 
+# Database queries
 def retreiveURL(urlIndex):
     conn = mysql.connect()
     cursor = conn.cursor()
@@ -84,10 +81,40 @@ def insertLongURL(original_url):
     shortURL = host + encoded_string
     return shortURL
 
-# Serve landing page
-@app.route('/', methods=['GET'])
-def home():
-    return render_template('index.html')
+# get last 100 urls that were inserted
+@app.route('/getLastHundred', methods=['GET'])
+def getLastHundred():
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    query = "SELECT id, long_url, num_visits from tbl_url ORDER BY insert_date desc LIMIT 100"
+    cursor.execute(query)
+    data = cursor.fetchall()
+    # print data
+    # Close connections
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return jsonify({'last_hundred': data})
+
+
+# get top 10 urls by views in last month
+@app.route('/getTopTen', methods=['GET'])
+def getTopTen():
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    month = timedelta(days=30)
+    endOfToday = str(datetime.today())[0:10] + " 23:59:00"
+    lastMonth = str(datetime.today() - month)[0:10] + " 00:00:00"
+    query = "SELECT id, long_url, num_visits from tbl_url WHERE insert_date BETWEEN \'" + lastMonth  + "\' and \'" + endOfToday + "\' ORDER BY num_visits desc LIMIT 10;"
+    # print query
+    cursor.execute(query)
+    data = cursor.fetchall()
+    # print data
+    # Close connections
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return jsonify({'top_ten': data})
 
 # get number of visits when given a shortURL
 @app.route('/getNumVisits', methods=['POST'])
@@ -139,6 +166,11 @@ def useShortURL(shortURL):
         else:
             return redirect(redirectURL)
 
+    return render_template('index.html')
+
+# Serve landing page
+@app.route('/', methods=['GET'])
+def home():
     return render_template('index.html')
 
 if __name__ == '__main__':

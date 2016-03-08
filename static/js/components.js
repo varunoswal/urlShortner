@@ -1,3 +1,127 @@
+var ShortListURLS = React.createClass({
+  getInitialState: function() {
+    return {
+      listData:[] ,
+    };
+  },
+
+  componentWillMount: function(){
+    this.getTopTen();
+  },
+
+  getTopTen: function(){
+    var _this = this;
+
+    $.ajax({
+      url: window.ipAddress + "/getTopTen",
+      type: "GET",
+      success: function(data){
+        //alert(data["top_ten"][0].length);
+        _this.setState({
+          listData:data["top_ten"]
+        })
+      }.bind(this),
+      error: function(xhr, status, err){
+        console.error("/getTopTen failed: ", status, err.toString());
+      }.bind(this)
+    });
+  },
+
+  render: function(){
+    var index = 0;
+    var tableRows = this.state.listData.map(function(url){
+      return(
+        <TableRow key={index++} id={url[0]} source={url[1]} visits={url[2]} />
+      );
+    });
+
+    return(
+        <div className="table-responsive">
+            <table className="table table-hover table-striped">
+                <thead className="tableHead">
+                    <tr>
+                        <th><b>Short URL</b></th>
+                        <th><b>Source URL</b></th>
+                        <th><b>Number of Visits</b></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {tableRows}
+                </tbody>
+            </table>
+        </div>
+      );
+  }
+});
+
+var LongListURLS = React.createClass({
+  getInitialState: function() {
+    return {
+      listData:[] ,
+    };
+  },
+
+  componentWillMount: function(){
+    this.getLastHundred();
+  },
+
+  getLastHundred: function(){
+    var _this = this;
+    $.ajax({
+      url: window.ipAddress + "/getLastHundred",
+      type: "GET",
+      success: function(data){
+        //alert(data["top_ten"][0].length);
+        _this.setState({
+          listData:data["last_hundred"]
+        })
+      }.bind(this),
+      error: function(xhr, status, err){
+        console.error("/getLastHundred failed: ", status, err.toString());
+      }.bind(this)
+    });
+  },
+
+  render: function(){
+    var index = 0;
+    var tableRows = this.state.listData.map(function(url){
+      return(
+        <TableRow key={index++} id={url[0]} source={url[1]} visits={url[2]} />
+      );
+    });
+
+    return(
+        <div className="table-responsive">
+            <table className="table table-hover table-striped">
+                <thead className="tableHead">
+                    <tr>
+                        <th><b>Short URL</b></th>
+                        <th><b>Source URL</b></th>
+                        <th><b>Number of Visits</b></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {tableRows}
+                </tbody>
+            </table>
+        </div>
+      );
+  }
+});
+
+var TableRow = React.createClass({
+    render: function(){
+        var _this = this;
+        return(
+            <tr id={"row" + _this.props.key}>
+                <td className="rowItem">{_this.props.id}</td>
+                <td className="rowItem">{_this.props.source}</td>
+                <td className="rowItem">{_this.props.visits}</td>
+            </tr>
+        )
+    }
+});
+
 var VisitTracker = React.createClass({
   getNumVisits: function() {
       var shortURL = $("#shortURL").val();
@@ -12,7 +136,7 @@ var VisitTracker = React.createClass({
               alert(data['num_visits']);
           }.bind(this),
           error: function(xhr, status, err){
-              console.error("/getShortURL failed: ", status, err.toString())
+              console.error("/getNumVisits failed: ", status, err.toString());
           }.bind(this)
       });
   },
@@ -22,11 +146,11 @@ var VisitTracker = React.createClass({
     return (
       <div className="container center-block" id="mainForm">
          <div className="form-group" id="urlInput">
-             <div className="col-md-2"></div>
+             <div className="col-md-3"></div>
              <div className="col-md-5">
               <input type="text" className="form-control" id="shortURL" placeholder="Enter short URL to track visits" />
              </div>
-             <div className="col-md-2">
+             <div className="col-md-1">
                   <button type="button" id="shortBtn" className="btn btn-md btn-info" onClick={function(){_this.getNumVisits()}}>Track</button>
              </div>
          </div>
@@ -50,7 +174,7 @@ var URLShortner = React.createClass({
             $("#mainForm").append(link + data['url'] + "</a>");
         }.bind(this),
         error: function(xhr, status, err){
-            console.error("/getShortURL failed: ", status, err.toString())
+            console.error("/getShortURL failed: ", status, err.toString());
         }.bind(this)
     });
   },
@@ -61,11 +185,11 @@ var URLShortner = React.createClass({
     return(
         <div className="container center-block" id="mainForm">
            <div className="form-group" id="urlInput">
-               <div className="col-md-2"></div>
+               <div className="col-md-3"></div>
                <div className="col-md-5">
                 <input type="text" className="form-control" id="userURL" placeholder="Enter URL to shorten" />
                </div>
-               <div className="col-md-2">
+               <div className="col-md-1">
                     <button type="button" id="shortBtn" className="btn btn-md btn-info" onClick={function(){_this.shortenURL()}}>Shorten</button>
                </div>
            </div>
@@ -87,7 +211,7 @@ var NavBar = React.createClass({
                 <span className="icon-bar"></span>
                 <span className="icon-bar"></span>
                 </button>
-                <a className="navbar-brand" href="#">Shorten ur URLs</a>
+                <a className="navbar-brand" href="">Shorten ur URLs</a>
              </div>
              <div id="navbar" className="navbar-collapse collapse">
                 <ul className="nav navbar-nav navbar-right">
@@ -112,6 +236,7 @@ var MainUI = React.createClass({
 
   changeView: function(newView)
   {
+    //alert(newView);
     this.setState({
       view:newView
     })
@@ -131,6 +256,22 @@ var MainUI = React.createClass({
     {
       return(
           <VisitTracker />
+        );
+    }
+    else if(view == "topten")
+    {
+        return(
+            <ShortListURLS />
+        );
+    }
+    else if(view == "lasthundred")
+        return(
+            <LongListURLS />
+        );
+    else if(view == "custom")
+    {
+        return(
+          <Customizer />
         );
     }
   },
