@@ -2,3 +2,8 @@ body{
     padding-top: 200px;
     text-align:center;
 }
+
+.btn-link
+{
+	margin-top: 7px;
+}

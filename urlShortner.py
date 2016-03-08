@@ -15,13 +15,11 @@ app.config['MYSQL_DATABASE_DB'] = 'urlDB'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
 host = 'http://localhost:5000/'
-
 CORS(app)
 
 # Database queries
 # get top 10 urls by views in last month
 # get last 100 urls that were inserted
-# get number of visits when given a shortURL
 
 # Base62 Encoder
 def toBase62(num, b = 62):
@@ -90,6 +88,32 @@ def insertLongURL(original_url):
 @app.route('/', methods=['GET'])
 def home():
     return render_template('index.html')
+
+# get number of visits when given a shortURL
+@app.route('/getNumVisits', methods=['POST'])
+def getNumVisits():
+    if request.method == 'POST':
+        shortURL = request.form['url']
+        print shortURL
+        b62Str = shortURL[len(host):len(shortURL)]
+        urlID = toBase10(b62Str)
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        query = "SELECT num_visits FROM tbl_url WHERE id=%d" % (urlID)
+        cursor.execute(query)
+        visits = cursor.fetchone()
+        
+        if visits != None:
+            numVisits = visits[0]
+        else:
+            numVisits = -1            
+        
+        print numVisits
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return jsonify({'num_visits': str(numVisits)})
 
 # insert method takes in og url -> returns id of inserted record -> encode to b62 -> update shorturl in db ?
 @app.route('/getShortURL', methods=['POST'])
