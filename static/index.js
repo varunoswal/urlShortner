@@ -13,10 +13,15 @@ function shortenURL(event) {
         type:"POST",
         datatype: "json",
         data:{"url": userURL},
+
         success: function(data){
-            alert(data["url"]);
-            $("#mainForm").append("<a href='/'>" + data['url'] + "</a>");
+            
+            var link = "<a href='" + data['url'] + "'>";
+            alert(link);
+
+            $("#mainForm").append(link + data['url'] + "</a>");
         }.bind(this),
+
         error: function(xhr, status, err){
             console.error("/getShortURL failed: ", status, err.toString())
         }.bind(this)

@@ -1,10 +1,10 @@
+from flask import Flask, render_template, request, redirect, jsonify
+from flask.ext.cors import CORS
+from flaskext.mysql import MySQL
 import string
 from math import floor
 from urlparse import urlparse
 from datetime import datetime
-from flask.ext.cors import CORS
-from flaskext.mysql import MySQL
-from flask import Flask, render_template, request, redirect, jsonify
 # root@localhost:shorturl;
 
 mysql = MySQL()
@@ -15,13 +15,12 @@ app.config['MYSQL_DATABASE_DB'] = 'urlDB'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
 host = 'http://localhost:5000/'
+
 CORS(app)
 
 # Database queries
 # get top 10 urls by views in last month
-
 # get last 100 urls that were inserted
-
 # get number of visits when given a shortURL
 
 # Base62 Encoder
@@ -49,8 +48,9 @@ def toBase10(num, b = 62):
     return res
 
 # Serve landing page
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET'])
 def home():
+    print 'here'
     return render_template('index.html')
 
 # insert method takes in og url -> returns id of inserted record -> encode to b62 -> update shorturl in db ?
@@ -79,25 +79,32 @@ def getShortURL():
         shortURL = host + encoded_string
         return jsonify({'url': shortURL})
 
-# Routing method that decouples 6 char base62 encoding -> retrieves og url and routes window to it -> increments visit count by 1
+# Routing method retrieves og url and routes window to it -> increments visit count by 1
 @app.route('/<shortURL>')
 def useShortURL(shortURL):
-    print shortURL
-    urlIndex = toBase10(shortURL)
-    conn = mysql.connect()
-    cursor = conn.cursor()
-    query = "SELECT long_url FROM tbl_url WHERE id=%d"%(urlIndex)
-    print query
-    cursor.execute(query)
-    url = cursor.fetchone()
+    if (shortURL != "None" and shortURL != "favico.ico"):
+        redirectURL = "http://localhost:5000"
+        urlIndex = toBase10(shortURL)
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        query = "SELECT long_url FROM tbl_url WHERE id=%d"%(urlIndex)
+        cursor.execute(query)
+        
+        try:
+            redirectURL = cursor.fetchone()[0]
+            print redirectURL    
+        except Exception as e:
+            print e
 
-    print url
+        conn.commit()
+        cursor.close()
+        conn.close()
 
-    conn.commit()
-    cursor.close()
-    conn.close()
+        return redirect(redirectURL)
+    return render_template('index.html')
 
-    return redirect(url)
+
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    print "starting"
+    app.run(host="0.0.0.0", port=5000, debug=True)
