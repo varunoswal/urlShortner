@@ -16,7 +16,6 @@ var ShortListURLS = React.createClass({
       url: window.ipAddress + "/getTopTen",
       type: "GET",
       success: function(data){
-        //alert(data["top_ten"][0].length);
         _this.setState({
           listData:data["top_ten"]
         })
@@ -122,33 +121,137 @@ var TableRow = React.createClass({
     }
 });
 
+var Customizer = React.createClass({
+  insertCustURL: function() {
+      var tbID = "#urlInput1";
+      var tbID2 = "#urlInput2";
+      var url1 = $("#sourceURL").val();
+      var url2= $("#custURL").val();
+
+
+      // Allow only if passes no space and symbols check
+      var pattern1 = new RegExp("\\s");
+      var pattern2 = /[-!$%^&*#()_+|~=`{}\[\]";'<>?,]/;
+      var pattern3 = /[^A-Za-z0-9 ]/;
+      
+      if(pattern2.test(url1) || pattern1.test(url1))
+      {
+        
+        $(tbID).addClass("has-error");  
+      }
+      else if(pattern3.test(url2) || pattern2.test(url1) || pattern1.test(url2) || url2.length > 20)
+      {
+        alert('not an');
+        $(tbID2).addClass("has-error");  
+      }
+      else
+      {
+        if($(tbID).hasClass('has-error'))
+        {
+          $(tbID).removeClass("has-error");
+          $(tbID).addClass("has-success");
+        }
+        else
+        {
+          $(tbID).addClass("has-success"); 
+          $(tbID2).addClass("has-success"); 
+        }
+
+        // $.ajax({
+        //     url: window.ipAddress+"/insertCustURL",
+        //     type:"POST",
+        //     datatype: "json",
+        //     data:{"url": shortURL},
+        //     success: function(data){          
+        //         alert(data['num_visits']);
+        //     }.bind(this),
+        //     error: function(xhr, status, err){
+        //         console.error("/getNumVisits failed: ", status, err.toString());
+        //     }.bind(this)
+        // });
+
+      } 
+  },
+
+  render: function(){
+    var _this = this;
+    return(
+
+        <div className="container center-block" id="customForm">
+          <div className="container center-block" id="customForm">
+              <div className="form-group" id="urlInput1">
+                  <div className="col-md-3"></div>
+                  <div className="col-md-5">
+                   <input type="text" className="form-control" id="sourceURL" placeholder="Enter URL to which the customized URL will be redirect" />
+                  </div>          
+              </div>
+          </div>
+          <br /><br />
+          <div className="container center-block" id="customForm">
+             <div className="form-group" id="urlInput2">
+                 <div className="col-md-3"></div>
+                 <div className="col-md-5">
+                  <input type="text" className="form-control" id="custURL" placeholder="Enter a custom URL extension such as CustomURL or C00Lurl" />
+                 </div>
+                 <div className="col-md-1">
+                      <button type="button" id="shortBtn" className="btn btn-md btn-info" onClick={function(){_this.insertCustURL()}}>Customize</button>
+                 </div>
+             </div>
+          </div>
+        </div>
+      )
+  }
+});
+
 var VisitTracker = React.createClass({
   getNumVisits: function() {
-      var shortURL = $("#shortURL").val();
+      var tbID = "#trackForm";
+      var url = $("#trackURL").val();
       // Call url checker on shorturl ^ and allow only if passes 
 
-      $.ajax({
-          url: window.ipAddress+"/getNumVisits",
-          type:"POST",
-          datatype: "json",
-          data:{"url": shortURL},
-          success: function(data){          
-              alert(data['num_visits']);
-          }.bind(this),
-          error: function(xhr, status, err){
-              console.error("/getNumVisits failed: ", status, err.toString());
-          }.bind(this)
-      });
+      // Allow only if passes no space and symbols check
+      var pattern = new RegExp("\\s");
+      var pattern2 = /[-!$%^&*#()_+|~=`{}\[\]";'<>?,]/;
+      
+      if(pattern2.test(url) || pattern.test(url))
+      {
+        $(tbID).addClass("has-error");  
+      }
+      else
+      {
+        if($(tbID).hasClass('has-error'))
+        {
+          $(tbID).removeClass("has-error");
+          $(tbID).addClass("has-success");
+        }
+        else
+        {
+          $(tbID).addClass("has-success"); 
+        }
+
+        $.ajax({
+            url: window.ipAddress+"/getNumVisits",
+            type:"POST",
+            datatype: "json",
+            data:{"url": url},
+            success: function(data){          
+                alert("Visited " + data['num_visits'] + " times");
+            }.bind(this),
+            error: function(xhr, status, err){
+                console.error("/getNumVisits failed: ", status, err.toString());
+            }.bind(this)
+        });
+      }  
   },
 
   render: function(){
     var _this = this;
     return (
-      <div className="container center-block" id="mainForm">
+      <div className="container center-block" id="trackForm">
          <div className="form-group" id="urlInput">
              <div className="col-md-3"></div>
              <div className="col-md-5">
-              <input type="text" className="form-control" id="shortURL" placeholder="Enter short URL to track visits" />
+              <input type="text" className="form-control" id="trackURL" placeholder="Enter short URL to track visits" />
              </div>
              <div className="col-md-1">
                   <button type="button" id="shortBtn" className="btn btn-md btn-info" onClick={function(){_this.getNumVisits()}}>Track</button>
@@ -161,29 +264,51 @@ var VisitTracker = React.createClass({
 
 var URLShortner = React.createClass({
   shortenURL: function() {
-    var userURL = $("#userURL").val();
-    // Call url checker on ^ and allow only if passes no space and symbols check
+    var tbID = "#shortForm";
+    var url = $("#userURL").val().trim();
 
-    $.ajax({
-        url: window.ipAddress+"/getShortURL",
-        type:"POST",
-        datatype: "json",
-        data:{"url": userURL},
-        success: function(data){          
-            var link = "<a href='" + data['url'] + "'>";
-            $("#mainForm").append(link + data['url'] + "</a>");
-        }.bind(this),
-        error: function(xhr, status, err){
-            console.error("/getShortURL failed: ", status, err.toString());
-        }.bind(this)
-    });
+    // Allow only if passes no space and symbols check
+    var pattern = new RegExp("\\s");
+    var pattern2 = /[-!$%^&*#()_+|~=`{}\[\]";'<>?,]/;
+    
+    if(pattern2.test(url) || pattern.test(url))
+    {
+      $(tbID).addClass("has-error");  
+    }
+    else
+    {
+      if($(tbID).hasClass('has-error'))
+      {
+        $(tbID).removeClass("has-error");
+        $(tbID).addClass("has-success");
+      }
+      else
+      {
+        $(tbID).addClass("has-success"); 
+      }
+
+      $.ajax({
+          url: window.ipAddress+"/getShortURL",
+          type:"POST",
+          datatype: "json",
+          data:{"url": url},
+          success: function(data){          
+              var link = "<a href='" + data['url'] + "'>";
+              $(tbID).append(link + data['url'] + "</a>");
+          }.bind(this),
+          error: function(xhr, status, err){
+              console.error("/getShortURL failed: ", status, err.toString());
+          }.bind(this)
+      });
+
+    }  
   },
 
   render: function(){
     var _this = this;
 
     return(
-        <div className="container center-block" id="mainForm">
+        <div className="container center-block" id="shortForm">
            <div className="form-group" id="urlInput">
                <div className="col-md-3"></div>
                <div className="col-md-5">
@@ -230,13 +355,12 @@ var NavBar = React.createClass({
 var MainUI = React.createClass({
   getInitialState: function() {
     return {
-      view:"main" ,
+      view:"custom" ,
     };
   },
 
   changeView: function(newView)
   {
-    //alert(newView);
     this.setState({
       view:newView
     })
@@ -279,8 +403,6 @@ var MainUI = React.createClass({
   render: function(){
     var _this = this;
     var view = this.state.view;
-    // alert(view);
-
     return (
       <div className="container-fluid">
         <NavBar changeView = {_this.changeView} />

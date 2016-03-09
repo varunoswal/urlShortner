@@ -12,10 +12,13 @@ app = Flask(__name__)
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'shorturl'
 app.config['MYSQL_DATABASE_DB'] = 'urlDB'
+# app.config['MYSQL_DATABASE_HOST'] = 'urldb.cdxsweytvqd1.us-west-2.rds.amazonaws.com'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
 host = 'http://localhost:5000/'
+# host = 'http://urlshortner.jxr6nhz78j.us-west-2.elasticbeanstalk.com/'
 CORS(app)
+# app.secret_key = 'I0zT0oChhym5DpGs6spSmI7RnxsTGdFFzB8MrR7Q'
 
 # Base62 Encoder
 def toBase62(num, b = 62):
@@ -80,6 +83,14 @@ def insertLongURL(original_url):
     encoded_string = toBase62(lastID)
     shortURL = host + encoded_string
     return shortURL
+
+@app.route('/createCustomURL', methods=['POST'])
+def createCustomURL():
+    print 'tbd'
+#     At most 20 character alphanumeric string
+# Implement the above function
+
+# WRITE UNIT TESTS FOR YOUR CODE
 
 # get last 100 urls that were inserted
 @app.route('/getLastHundred', methods=['GET'])
