@@ -7,3 +7,7 @@ body, th{
 {
 	margin-top: 7px;
 }
+
+.btn:focus,.btn:active {
+    outline: none !important;
+}
