@@ -29,6 +29,7 @@ def createCustomURL():
             data = json.loads(key)
 
         print data
+        
         # original_url = data['url']
         
         # if urlparse(original_url).scheme == '':

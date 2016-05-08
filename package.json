@@ -4,7 +4,7 @@
   "description": "Front-end components for urlShortner service",
   "main": "index.js",
   "scripts": {
-    "production": "webpack -p",
+    "production": "NODE_ENV=production webpack -p",
     "start": "webpack-dev-server"
   },
   "devDependencies": {
@@ -20,7 +20,8 @@
     "axios": "^0.11.0",
     "jquery": "^2.2.3",
     "react": "^15.0.1",
-    "react-dom": "^15.0.1"
+    "react-dom": "^15.0.1",
+    "xregexp": "^3.1.0"
   },
   "repository": {
     "type": "git",

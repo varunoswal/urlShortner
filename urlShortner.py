@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# app.py
 from flask import Flask, render_template, request, redirect, jsonify
 from flask.ext.cors import CORS
 from flaskext.mysql import MySQL
@@ -9,7 +8,7 @@ from math import floor
 from urlparse import urlparse
 from datetime import datetime, timedelta
 from helpers import *
-# root@localhost:shorturl;
+
 
 dbInfo = readDBInfo()
 
@@ -86,8 +85,11 @@ def getTopTen():
 @app.route('/getNumVisits', methods=['POST'])
 def getNumVisits():
     if request.method == 'POST':
-        shortURL = request.form['url']
-        print shortURL
+        print request.form
+        for key in request.form:
+            data = json.loads(key)
+
+        shortURL = data['url']
         b62Str = shortURL[len(host):len(shortURL)]
         urlID = toBase10(b62Str)
         conn = mysql.connect()
@@ -115,7 +117,7 @@ def getShortURL():
             data = json.loads(key)
 
         original_url = data['url']
-
+        print original_url
         if urlparse(original_url).scheme == '':
             original_url = 'http://' + original_url
 
@@ -131,6 +133,7 @@ def useShortURL(shortURL):
         if isCustomExt(shortURL) != -1:
             print isCustom
             redirectURL = getURL(isCustom)
+            print 'headin out'
             return redirect(redirectURL)
         else:    
             urlIndex = toBase10(shortURL)
