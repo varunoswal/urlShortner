@@ -1,5 +1,5 @@
 var React = require('react');
-var helpers = require('../static/js/helpers');
+var helpers = require('../helpers/helpers');
 
 var TopTenTable = React.createClass({
   getInitialState: function() {
@@ -26,7 +26,7 @@ var TopTenTable = React.createClass({
     var index = 0;
     var tableRows = this.state.listData.map(function(url){
       return(
-        <TableRow key={index++} id={url[0]} source={url[1]} visits={url[2]} />
+        <TableRow key={index++} rowIndex={index++} id={url[0]} source={url[1]} visits={url[2]} />
       );
     });
 
@@ -56,20 +56,16 @@ var TopTenTable = React.createClass({
   }
 });
 
-//First
-var TableRow = React.createClass({
-  render: function(){
-    var _this = this;
-    var link = window.ipAddress+"/"+this.props.id;
-    return(
-      <tr id={"row" + _this.props.key}>
-        <td className="rowItem"><a target="_blank" href={link}>{"short.ly/"+this.props.id}</a></td>
-        <td className="rowItem">{this.props.source}</td>
-        <td className="rowItem">{this.props.visits}</td>
-      </tr>
-  )
-  }
-});
+function TableRow(props){
+  let link = window.ipAddress + "/" + props.id;
+  return(
+        <tr id={"row" + props.rowIndex}>
+          <td className="rowItem"><a target="_blank" href={link}>{"short.ly/"+props.id}</a></td>
+          <td className="rowItem">{props.source}</td>
+          <td className="rowItem">{props.visits}</td>
+        </tr>
+    )
+}
 
 var TopTenTable = {"TopTenTable": TopTenTable, "TableRow": TableRow};
 module.exports = TopTenTable;

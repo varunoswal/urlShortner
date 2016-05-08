@@ -1,16 +1,6 @@
 var React = require('react');
-var NavBarComponents = require("./NavBarComponents");
-var TableComponents = require("./TopTenComponents");
-var FormComponents = require("./FormComponents");
-
-var Form = FormComponents.Form;
-
-var TopTenTable = TableComponents.TopTenTable;
-var TableRow = TableComponents.TableRow;
-
-var NavBar = NavBarComponents.NavBar;
-var NavBarButton = NavBarComponents.NavBarButton;
-
+var {TopTenTable} = require("./TopTenComponents");
+var {NavBar} = require("./NavBarComponents");
 var URLShortner = require("./URLShortner");
 var URLCustomizer = require("./URLCustomizer");
 var URLTracker = require("./URLTracker");

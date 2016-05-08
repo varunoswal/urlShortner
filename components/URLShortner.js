@@ -1,8 +1,6 @@
 var React = require('react');
 var helpers = require('../helpers/helpers');
-var FormComponents = require("./FormComponents");
-var Form = FormComponents.Form;
-
+var {Form} = require("./FormComponents");
 
 var URLShortner = React.createClass({
 
