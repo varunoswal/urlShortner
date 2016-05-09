@@ -24,12 +24,7 @@ var TopTenTable = React.createClass({
 
   render(){
     var index = 0;
-    var tableRows = this.state.listData.map(url => {
-      return(
-        <TableRow key={index++} rowIndex={index++} id={url[0]} source={url[1]} visits={url[2]} />
-      );
-    });
-
+    var tableRows = this.state.listData.map(url => <TableRow key={index++} rowIndex={index} id={url[0]} source={url[1]} visits={url[2]} /> );
     if (this.state.listData.length > 0)
     {
       return(

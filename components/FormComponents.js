@@ -22,7 +22,7 @@ function FormButton(props){
   return(
       <button type="button" className="btn btn-md btn-info" 
         id={props.btnID} 
-        onClick={function(){props.onBtnAction()}}>
+        onClick={() => {props.onBtnAction()}}>
         {props.btnLabel}
       </button>
     );

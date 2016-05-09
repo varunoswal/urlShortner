@@ -1,5 +1,5 @@
-body, th{
-    padding-top: 100px;
+body, th{    
+	padding-top: 50px;
     text-align:center;
 }
 
@@ -10,4 +10,29 @@ body, th{
 
 .btn:focus,.btn:active {
     outline: none !important;
+}
+
+.jumbotron{
+	margin-top: 50px;
+	background: transparent;
+	margin-bottom: 0px;
+}
+
+.panel-default{
+	border: none;
+}
+
+.table-responsive
+{
+	margin: 20px;
+}
+
+h2{
+	text-align: center;
+	padding-bottom: 50px;
+}
+
+.modal-list-item{
+	text-align: left;
+	list-style-type: none;
 }

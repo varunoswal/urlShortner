@@ -27,7 +27,7 @@ var helpers = {
     },
 
     trackVisits(url){
-        let apiPath =  window.ipAddress+'/getNumVisits';
+        let apiPath =  window.ipAddress+'/trackURLInfo';
         axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
         var config = {
             headers: {
@@ -40,7 +40,7 @@ var helpers = {
             config
             )
             .then(function (response) {
-                // console.log(response);
+                console.log(response);
                 return response.data;
             })
             .catch(function (response) {

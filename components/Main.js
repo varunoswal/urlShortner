@@ -1,9 +1,9 @@
 var React = require('react');
-var {TopTenTable} = require("./TopTenComponents");
-var {NavBar} = require("./NavBarComponents");
-var URLShortner = require("./URLShortner");
-var URLCustomizer = require("./URLCustomizer");
 var URLTracker = require("./URLTracker");
+var URLShortner = require("./URLShortner");
+var { NavBar } = require("./NavBarComponents");
+var URLCustomizer = require("./URLCustomizer");
+var { TopTenTable } = require("./TopTenComponents");
 
 var Main = React.createClass({
   getInitialState() {
@@ -13,13 +13,20 @@ var Main = React.createClass({
   },
 
   changeView(newView){
+    // Enable collapse from NavBarButtons when in mobile view
+    let toggleClass = document.getElementById("navbarCollapser").className;
+    if (!toggleClass.includes("collapsed"))
+    {
+      $('#navbar').collapse('toggle');
+    }
+
     this.setState({
       view:newView
     })
   },
 
   returnView(){
-    var view = this.state.view;
+    let view = this.state.view;
     
     switch (view){
       case "main":
@@ -34,13 +41,14 @@ var Main = React.createClass({
   },
 
   render(){
-    var view = this.state.view;
+    let view = this.state.view;
+    
     return (
       <div className="container-fluid">
         <NavBar changeView={this.changeView} />
         <div className="container">
-          {this.returnView(view)}
-        </div>
+          {this.returnView(view)}          
+        </div>        
       </div>
     )
   }

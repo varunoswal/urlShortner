@@ -19,7 +19,8 @@ app.config['MYSQL_DATABASE_HOST'] = dbInfo[1]
 app.config['MYSQL_DATABASE_USER'] = dbInfo[2]
 app.config['MYSQL_DATABASE_PASSWORD'] = dbInfo[3]
 mysql.init_app(app)
-host = 'http://localhost:5000/'
+host = 'http://10.0.1.12/'
+# host = 'http://localhost:5000/'
 # host = 'http://52.37.140.113/'
 CORS(app)
 
@@ -58,6 +59,7 @@ def getLastHundred():
     conn.close()
     return jsonify({'last_hundred': data})
 
+# CACHE THESE RESULTS + JOIN WITH CUSTOM 
 # get top 10 urls by views in last month
 @app.route('/getTopTen', methods=['GET'])
 def getTopTen():
@@ -79,32 +81,38 @@ def getTopTen():
     # print res
     return jsonify({'top_ten': res})
 
-# get number of visits when given a shortURL
-@app.route('/getNumVisits', methods=['POST'])
-def getNumVisits():
+# get visit information when given a shortURL
+@app.route('/trackURLInfo', methods=['POST'])
+def trackURLInfo():
     if request.method == 'POST':
-        print request.form
         for key in request.form:
             data = json.loads(key)
 
         shortURL = data['url']
-        b62Str = shortURL[len(host):len(shortURL)]
-        urlID = toBase10(b62Str)
+        encodedStr = shortURL[len(host):len(shortURL)]
+        
+        # Returns -1 if custom extension not in db            
+        urlID = isCustomExt(encodedStr) 
+        
+        # Not a custom url string so encode to base 10 and retrieve url id
+        if urlID == -1:        
+            urlID = toBase10(encodedStr)
+
         conn = mysql.connect()
         cursor = conn.cursor()
-        query = "SELECT num_visits FROM tbl_url WHERE id=%d" % (urlID)
+        query = "SELECT * FROM tbl_url WHERE id=%d" % (urlID)
         cursor.execute(query)
-        visits = cursor.fetchone()
+        urlInfo = cursor.fetchone()
         
-        if visits != None:
-            numVisits = visits[0]
+        if urlInfo != None:
+            res = {'source_url': urlInfo[1], 'views': urlInfo[2], 'date_created': urlInfo[3]}
         else:
-            numVisits = -1            
-       
+            res = None
+
         conn.commit()
         cursor.close()
         conn.close()
-        return jsonify({'num_visits': str(numVisits)})
+        return jsonify({'url_info': res})
 
 # insert method takes in og url -> returns id of inserted record -> encode to b62 -> update shorturl in db ?
 @app.route('/getShortURL', methods=['POST'])
@@ -120,10 +128,13 @@ def getShortURL():
         shortURL = insertURL(original_url)
         return jsonify({'url': shortURL})
 
-# Routing method retrieves og url and routes window to it -> increments visit count by 1
+# Routing method retrieves original url and redirects browser to it -> increments visit count by 1
 @app.route('/<shortURL>')
 def useShortURL(shortURL):
     if (shortURL != "None" and shortURL != "favico.ico"):
+        
+        print request.user_agent    # Create database cols for mac visits, windows visits, etc.. Then you can give percentage graphs relative to total views
+
         isCustom = isCustomExt(shortURL) # Returns -1 if custom extension not in db
         
         if isCustomExt(shortURL) != -1:
@@ -140,11 +151,6 @@ def useShortURL(shortURL):
 
     return render_template('index.html')
 
-# # Serve landing page
-# @app.route('/', methods=['GET'])
-# def home():
-#     return render_template('index.html')
-
 if __name__ == '__main__':
-    app.run(debug=True)
-    # app.run(host='0.0.0.0', port=80, debug=True)
+    # app.run(debug=True)
+    app.run(host='0.0.0.0', port=80, debug=True)
