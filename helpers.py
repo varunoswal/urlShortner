@@ -4,7 +4,6 @@ from flask import Flask
 from flaskext.mysql import MySQL
 from datetime import datetime, timedelta
 
-
 def readDBInfo():
     fname = 'config/dbinfo.txt'
     with open(fname) as f:
@@ -19,7 +18,7 @@ app.config['MYSQL_DATABASE_HOST'] = dbInfo[1]
 app.config['MYSQL_DATABASE_USER'] = dbInfo[2]
 app.config['MYSQL_DATABASE_PASSWORD'] = dbInfo[3]
 mysql.init_app(app)
-host = 'http://52.37.140.113/'
+from api import host
 
 # Base62 Encoder
 def toBase62(num, b = 62):

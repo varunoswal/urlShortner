@@ -5,22 +5,20 @@ var URLShortner = require("./URLShortner");
 var URLCustomizer = require("./URLCustomizer");
 var URLTracker = require("./URLTracker");
 
-//First - App Component
 var Main = React.createClass({
-  getInitialState: function() {
+  getInitialState() {
     return {
       view:"main"
     };
   },
 
-  changeView: function(newView)
-  {
+  changeView(newView){
     this.setState({
       view:newView
     })
   },
 
-  returnView: function(){
+  returnView(){
     var view = this.state.view;
     
     switch (view){
@@ -35,7 +33,7 @@ var Main = React.createClass({
     }
   },
 
-  render: function(){
+  render(){
     var view = this.state.view;
     return (
       <div className="container-fluid">

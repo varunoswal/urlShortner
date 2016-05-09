@@ -2,29 +2,29 @@ var React = require('react');
 var helpers = require('../helpers/helpers');
 
 var TopTenTable = React.createClass({
-  getInitialState: function() {
+  getInitialState() {
     return {
       listData:[]
     };
   },
 
-  componentWillMount: function(){
+  componentWillMount(){
     this.getTopTen();
   },
 
-  getTopTen: function(){
+  getTopTen(){
     var _this = this;
     helpers.getTopTen()
-      .then(function(data){
+      .then(data => {
         _this.setState({
                 listData:data["top_ten"]
             })
       });
   },
 
-  render: function(){
+  render(){
     var index = 0;
-    var tableRows = this.state.listData.map(function(url){
+    var tableRows = this.state.listData.map(url => {
       return(
         <TableRow key={index++} rowIndex={index++} id={url[0]} source={url[1]} visits={url[2]} />
       );

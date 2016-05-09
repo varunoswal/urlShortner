@@ -1,16 +1,7 @@
 var React = require('react');
 
-function NavBarButton (props){
-  return(
-    <li>
-      <button type="button" id={props.id} className="btn btn-md btn-link" onClick={function(){props.fun()}}>
-        {props.btn_label}
-      </button>
-    </li>
-  )
-}
-
-function NavBar (props) {
+function NavBar (props) {  
+  let NavBarButtonItems = NavButtonGenerator(props);
   return(
     <nav className="navbar navbar-inverse navbar-fixed-top">
         <div className="container">
@@ -21,14 +12,11 @@ function NavBar (props) {
               <span className="icon-bar"></span>
               <span className="icon-bar"></span>
               </button>
-              <a className="navbar-brand" href="">Shorten ur URLs</a>
+              <a className="navbar-brand" href="">URL Shortner</a>
            </div>
-           <div id="navbar" className="navbar-collapse collapse">
+           <div id="navbar" className="navbar-collapse collapse">              
               <ul className="nav navbar-nav navbar-right">
-                  <NavBarButton className="navBarBtn" id="shortBtn"  btn_label="Shorten" fun={ function(){props.changeView("main")} } />
-                  <NavBarButton className="navBarBtn" id="customBtn" btn_label="Customize" fun={ function(){props.changeView("custom")} } />
-                  <NavBarButton className="navBarBtn" id="trackBtn" btn_label="Track" fun={ function(){props.changeView("track")} } />
-                  <NavBarButton className="navBarBtn" id="topTenBtn" btn_label="Top 10" fun={ function(){props.changeView("topten")} } />
+                {NavBarButtonItems}                      
               </ul>
            </div>
         </div>
@@ -36,5 +24,48 @@ function NavBar (props) {
     )
 }
 
-var NavBarComponents = {"NavBar": NavBar, "NavBarButton": NavBarButton};
+function NavButtonGenerator(props){
+  // Defines current set of navbar buttons and passes a view change prop function
+  const NavBarButtons = [
+    {
+      id: "shortBtn",
+      btn_label: "Shorten",
+      func: () => {props.changeView("main")}
+    },
+    {
+      id: "customBtn",
+      btn_label: "Customize",
+      func: () => {props.changeView("custom")}
+    },
+    {
+      id: "trackBtn",
+      btn_label: "Track",
+      func: () => {props.changeView("track")}
+    },
+    {
+      id: "topTenBtn",
+      btn_label: "Top 10",
+      func: () => {props.changeView("topten")}
+    },
+  ];
+  var key = 0;
+  let NavBarButtonItems = NavBarButtons.map(button => {
+    return(
+        <li key={key++}>
+          <NavBarButton className="navBarBtn" id={button.id} btn_label={button.btn_label} func={button.func} />
+        </li>
+      );
+  });
+  return NavBarButtonItems;
+}
+
+function NavBarButton (props){
+  return(
+    <button type="button" id={props.id} className="btn btn-md btn-link" onClick={ () => {props.func()} }>
+      {props.btn_label}
+    </button>
+  );
+}
+
+var NavBarComponents = {"NavBar": NavBar};
 module.exports = NavBarComponents;

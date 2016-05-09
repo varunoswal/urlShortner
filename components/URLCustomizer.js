@@ -1,11 +1,11 @@
 var React = require('react');
 var helpers = require('../helpers/helpers');
-var {Form} = require("./FormComponents");
+var {Form, FormTextBox, FormButton} = require("./FormComponents");
 
 // Can Improve
 var URLCustomizer = React.createClass({
 
-  insertCustURL: function() {
+  insertCustURL() {
       var tbID = "#urlInput1";
       var tbID2 = "#urlInput2";
       var sourceURL = $("#sourceURL").val();
@@ -38,19 +38,18 @@ var URLCustomizer = React.createClass({
       }
   },
 
-  render: function(){
+  render(){
     return(
-        <div className="container center-block" id="customForm">
-          <div className="container center-block" id="customForm">
-              <div className="form-group" id="urlInput1">
-                  <div className="col-xs-1 col-sm-1 col-md-2"></div>
-                  <div className="col-xs-8 col-sm-8 col-md-7">
-                   <input type="text" className="form-control" id="sourceURL" placeholder="Enter source URL which the customized URL should redirect to" />
-                  </div>          
-              </div>
-          </div>
+        <div>
+          <Form formID="sourceURLForm" formGroupID="urlInput1">
+            <FormTextBox tbID="sourceURL" placeholder="Enter source URL which the customized URL should redirect to" />
+            {null}
+          </Form>
           <br />
-          <Form formID="customFormMain" formGroupID="urlInput2" tbID="custURL" placeholder="Enter your own URL extension such as myURL or cust0mURL" btnID="custBtn" btnAction={this.insertCustURL} btnLabel="Customize"/>
+          <Form formID="customURLForm" formGroupID="urlInput2">
+            <FormTextBox tbID="custURL" placeholder="Enter your own URL extension such as myURL or cust0mURL" />
+            <FormButton btnID="custBtn" onBtnAction={this.insertCustURL} btnLabel="Customize" />
+          </Form>
         </div>
       )
   }

@@ -1,11 +1,25 @@
 var React = require('react');
 var helpers = require('../helpers/helpers');
-var {Form} = require("./FormComponents");
+var {Form, FormTextBox, FormButton} = require("./FormComponents");
 
 var URLShortner = React.createClass({
+  getInitialState(){
+    // local storage urls
+    // short url on current pange
+    return{
+      results:null
+    };
+  },
+  
+  componentWillMount(){
+
+    // DROPDOWN OF RESULTING SHORT URL - this and customizer
+    // REGEXP function that fits needs of all 3 components
+    // get past urls from local storage if exists and state component state
+  },
 
   // Can IMPROVE
-  shortenURL: function() {
+  shortenURL() {
     var tbID = "#shortForm";
     var url = $("#userURL").val().trim();
     var isValid = helpers.isValidURL(url);
@@ -27,9 +41,12 @@ var URLShortner = React.createClass({
     }
   },
 
-  render: function(){
+  render(){
     return(
-        <Form formID="shortForm" formGroupID="urlInput" tbID="userURL" placeholder="Enter URL to shorten" btnID="shortURLBtn" btnAction={this.shortenURL} btnLabel="Shorten"/>
+        <Form formID="shortForm" formGroupID="urlInput">
+          <FormTextBox tbID="userURL" placeholder="Enter URL shorten" />
+          <FormButton btnID="shortURLBtn" onBtnAction={this.shortenURL} btnLabel="Shorten" />
+        </Form>
       );
   }
 });

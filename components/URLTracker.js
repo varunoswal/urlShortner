@@ -1,16 +1,16 @@
 var React = require('react');
 var helpers = require('../helpers/helpers');
-var {Form} = require("./FormComponents");
+var {Form, FormTextBox, FormButton} = require("./FormComponents");
 
 // Not First
 var URLTracker = React.createClass({
-    getInitialState: function(){
+    getInitialState(){
         return{
             numVisits: -1
         }
     },
 
-    getNumVisits: function() {
+    getNumVisits() {
       var _this = this;
       var tbID = "#trackForm";
       var url = $("#trackURL").val().trim();
@@ -35,35 +35,36 @@ var URLTracker = React.createClass({
       }  
   },
 
-  render: function(){
+  render(){
     var visits = this.state.numVisits;
     return (
       <div className="visitForm">
-        <Form formID="trackForm" formGroupID="urlInput2" tbID="trackURL" placeholder="Enter short URL to track visits" btnID="trackBtn" btnAction={this.getNumVisits} btnLabel="Track"/>
+        <Form formID="trackForm" formGroupID="urlInput">
+          <FormTextBox tbID="trackURL" placeholder="Enter short URL to track visits" />
+          <FormButton btnID="trackBtn" onBtnAction={this.getNumVisits} btnLabel="Track" />
+        </Form>
         <TextBoxModal id='visitModal' header='URL Visit Info' numVisits={visits} />
       </div>
     )
   }
 });
 
-var TextBoxModal = React.createClass({
-  render: function() {
-      return (
-          <div className="modal fade" id={this.props.id} tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-              <div className="modal-dialog">
-                  <div className="modal-content">
-                      <div className="modal-header">
-                          <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                          <h4 className="modal-title"> {this.props.header} </h4>
-                      </div>
-                      <div className="modal-body">
-                          URL has been visited {this.props.numVisits} times
-                      </div>
+function TextBoxModal(props){
+  return (
+      <div className="modal fade" id={props.id} tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div className="modal-dialog">
+              <div className="modal-content">
+                  <div className="modal-header">
+                      <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                      <h4 className="modal-title"> {props.header} </h4>
+                  </div>
+                  <div className="modal-body">
+                      URL has been visited {props.numVisits} times
                   </div>
               </div>
           </div>
-      );
-  }
-});
+      </div>
+  );
+}
 
 module.exports = URLTracker;

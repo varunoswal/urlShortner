@@ -1,16 +1,17 @@
 #!/usr/bin/python
-# app.py
 from flask import Flask, render_template, request, redirect, jsonify
 from flask.ext.cors import CORS
 from flaskext.mysql import MySQL
+import string
 import json
 from math import floor
 from urlparse import urlparse
 from datetime import datetime, timedelta
-from helpers import toBase62, toBase10
-from helpers import readDBInfo, toBase62, toBase10, getURL, insertURL
+from helpers import *
+
 
 dbInfo = readDBInfo()
+
 mysql = MySQL()
 app = Flask(__name__)
 app.config['MYSQL_DATABASE_DB'] = dbInfo[0]
@@ -18,26 +19,29 @@ app.config['MYSQL_DATABASE_HOST'] = dbInfo[1]
 app.config['MYSQL_DATABASE_USER'] = dbInfo[2]
 app.config['MYSQL_DATABASE_PASSWORD'] = dbInfo[3]
 mysql.init_app(app)
-host = 'http://52.37.140.113/'
+host = 'http://localhost:5000/'
+# host = 'http://52.37.140.113/'
 CORS(app)
+
+
+# WRITE UNIT TESTS FOR YOUR CODE
 
 @app.route('/createCustomURL', methods=['POST'])
 def createCustomURL():
     if request.method == 'POST':
-        print request.form
         for key in request.form:
             data = json.loads(key)
 
-        print data
+        original_url = data['sourceURL']
+        custom_url = data['customURL']        
         
-        # original_url = data['url']
-        
-        # if urlparse(original_url).scheme == '':
-        #     original_url = 'http://' + original_url
+        if urlparse(original_url).scheme == '':
+            original_url = 'http://' + original_url
 
-        # shortURL = insertURL(original_url)
-        # return jsonify({'url': shortURL})
-
+        urlID = insertSourceURL(original_url)
+        insertCustomURL(custom_url, urlID)
+        customURL = host + custom_url
+        return jsonify({'url': customURL})
 
 # get last 100 urls that were inserted
 @app.route('/getLastHundred', methods=['GET'])
@@ -79,11 +83,11 @@ def getTopTen():
 @app.route('/getNumVisits', methods=['POST'])
 def getNumVisits():
     if request.method == 'POST':
+        print request.form
         for key in request.form:
             data = json.loads(key)
 
         shortURL = data['url']
-
         b62Str = shortURL[len(host):len(shortURL)]
         urlID = toBase10(b62Str)
         conn = mysql.connect()
@@ -96,9 +100,7 @@ def getNumVisits():
             numVisits = visits[0]
         else:
             numVisits = -1            
-        
-        # print numVisits
-
+       
         conn.commit()
         cursor.close()
         conn.close()
@@ -108,12 +110,10 @@ def getNumVisits():
 @app.route('/getShortURL', methods=['POST'])
 def getShortURL():
     if request.method == 'POST':
-        print request.form
         for key in request.form:
             data = json.loads(key)
 
         original_url = data['url']
-        
         if urlparse(original_url).scheme == '':
             original_url = 'http://' + original_url
 
@@ -124,20 +124,27 @@ def getShortURL():
 @app.route('/<shortURL>')
 def useShortURL(shortURL):
     if (shortURL != "None" and shortURL != "favico.ico"):
+        isCustom = isCustomExt(shortURL) # Returns -1 if custom extension not in db
         
-        urlIndex = toBase10(shortURL)
-        redirectURL = getURL(urlIndex)
+        if isCustomExt(shortURL) != -1:
+            redirectURL = getURL(isCustom)
+            return redirect(redirectURL)
+        else:    
+            urlIndex = toBase10(shortURL)
+            redirectURL = getURL(urlIndex)
+        
         if(redirectURL==host[0:-1]):
-            print 'no link found'
+            print 'No short url found: direct to home'
         else:
             return redirect(redirectURL)
 
     return render_template('index.html')
 
-# Serve landing page
-@app.route('/', methods=['GET'])
-def home():
-    return render_template('index.html')
+# # Serve landing page
+# @app.route('/', methods=['GET'])
+# def home():
+#     return render_template('index.html')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80, debug=True)
+    app.run(debug=True)
+    # app.run(host='0.0.0.0', port=80, debug=True)
