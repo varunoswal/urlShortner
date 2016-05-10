@@ -19,7 +19,7 @@ var URLCustomizer = React.createClass({
       
       if(!isValid)
       {
-          $(tbID).addClass("has-error");
+        $(tbID).addClass("has-error");
       }
       else if(!helpers.isValidCustomExtension("#custURL"))
       {        
@@ -31,10 +31,17 @@ var URLCustomizer = React.createClass({
         helpers.removeErrorClass(tbID);
         helpers.removeErrorClass(tbID2);
         helpers.createCustomURL(sourceURL, customURL)
-          .then(data => {
-              this.setState({
-                urlList:[data['url'], ...this.state.urlList]
-              });
+          .then(data => {              
+              if (data['url'] !== false)
+              {
+                this.setState({
+                  urlList:[data['url'], ...this.state.urlList]
+                });
+              }
+              else
+              {
+                helpers.popErrMsg(tbID2, "Custom URL is already in use, choose another one");
+              }              
           });
       }
   },

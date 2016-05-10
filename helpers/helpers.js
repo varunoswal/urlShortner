@@ -1,6 +1,7 @@
 var axios = require('axios');
 var XRegExp = require('xregexp');
-
+// var ipAddress = "http://localhost:5000";
+var ipAddress = "http://52.37.140.113";
 var helpers = {
     // modify with classnames package from npm
     removeErrorClass(id){
@@ -23,11 +24,11 @@ var helpers = {
         });
 
         $(id).tooltip('show');
-        setTimeout(function(){$(id).tooltip('destroy');}, 5000);
+        setTimeout(function(){$(id).tooltip('destroy');}, 6000);
     },
 
     trackVisits(url){
-        let apiPath =  window.ipAddress+'/trackURLInfo';
+        let apiPath =  ipAddress+'/trackURLInfo';
         axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
         var config = {
             headers: {
@@ -40,7 +41,7 @@ var helpers = {
             config
             )
             .then(function (response) {
-                console.log(response);
+                // console.log(response);
                 return response.data;
             })
             .catch(function (response) {
@@ -82,10 +83,7 @@ var helpers = {
                 return false;
             }    
         }
-        
-        // console.log(url);
-        // console.log('hosts');
-        
+
         // Check if domain name has at least one dot and no symbols
         var hostRegex = XRegExp('(?<host>   [^/?]+  ) ', 'x');        
         var hostParts = XRegExp.exec(url, hostRegex);
@@ -106,7 +104,7 @@ var helpers = {
     isValidCustomExtension(tbID){
         var url = $(tbID).val().trim();
         var pattern = new RegExp("\\s");
-        var pattern2 = /[-!$%^&*@#()_+|~=`{}\[\]";'<>?,]/;
+        var pattern2 = /[-!$%^&*@#()_+|~`{}\[\]";'<>,]/;
         var pattern3 = /[^A-Za-z0-9 ]/;
         if(url.length == 0)
         {
@@ -123,7 +121,7 @@ var helpers = {
     },
 
     getShortURL (url) {
-        let apiPath =  window.ipAddress+'/getShortURL';
+        let apiPath =  ipAddress+'/getShortURL';
         axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
         var config = {
             headers: {
@@ -145,7 +143,7 @@ var helpers = {
     },
 
     createCustomURL (sourceURL, customURL) {
-        let apiPath =  window.ipAddress+'/createCustomURL';
+        let apiPath =  ipAddress+'/createCustomURL';
         axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
         var config = {
             headers: {
@@ -167,7 +165,7 @@ var helpers = {
     },
 
     getTopTen(){
-        let apiPath =  window.ipAddress+'/getTopTen';
+        let apiPath =  ipAddress+'/getTopTen';
 
         return axios({
             method: 'get',

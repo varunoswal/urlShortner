@@ -13,7 +13,7 @@ var URLTracker = React.createClass({
       var tbID = "#trackForm";
       var url = $("#trackURL").val().trim();
       console.log('calling');
-      var isValid = helpers.isValidURL("#trackURL");
+      var isValid = helpers.isValidCustomExtension("#trackURL");
       if(!isValid)
       {
         $(tbID).addClass("has-error");
@@ -46,7 +46,7 @@ var URLTracker = React.createClass({
         <div className="jumbotron visitForm">
           <h2>URL Tracker</h2>
           <Form formID="trackForm" formGroupID="urlInput">
-            <FormTextBox tbID="trackURL" placeholder="Enter short URL to track visits" />
+            <FormTextBox tbID="trackURL" placeholder="Enter short URL or custom URL extension to track visits" />
             <FormButton btnID="trackBtn" onBtnAction={this.getNumVisits} btnLabel="Track" />
           </Form>
           <TextBoxModal id='visitModal' header='URL Info' urlInfo={urlInfo} inputUrl={inputUrl} />

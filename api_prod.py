@@ -19,8 +19,8 @@ app.config['MYSQL_DATABASE_HOST'] = dbInfo[1]
 app.config['MYSQL_DATABASE_USER'] = dbInfo[2]
 app.config['MYSQL_DATABASE_PASSWORD'] = dbInfo[3]
 mysql.init_app(app)
-# host = 'http://52.37.140.113/'
-host = 'http://localhost:5000/'
+host = 'http://52.37.140.113/'
+# host = 'http://localhost:5000/'
 CORS(app)
 
 # Create a custom URL extension
@@ -138,10 +138,11 @@ def getShortURL():
 @app.route('/<shortURL>')
 def useShortURL(shortURL):
     if (shortURL != "None" and shortURL != "favico.ico"):
-        
-        print request.user_agent    # Create database cols for mac visits, windows visits, etc.. Then you can give percentage graphs relative to total views
+        # Create database cols for mac visits, windows visits, etc..
+        # print request.user_agent   
 
-        isCustom = isCustomExt(shortURL) # Returns -1 if custom extension not in db
+        # Returns -1 if custom extension not in db
+        isCustom = isCustomExt(shortURL) 
         
         if isCustomExt(shortURL) != -1:
             redirectURL = getURL(isCustom)
@@ -158,5 +159,5 @@ def useShortURL(shortURL):
     return render_template('index.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
-    # app.run(host='0.0.0.0', port=80, debug=True)
+    # app.run(debug=True)
+    app.run(host='0.0.0.0', port=80, debug=True)

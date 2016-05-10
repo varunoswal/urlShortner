@@ -3,6 +3,11 @@ body, th{
     text-align:center;
 }
 
+h2{
+	text-align: center;
+	padding-bottom: 20px;
+}
+
 .btn-link
 {
 	margin-top: 7px;
@@ -23,16 +28,10 @@ body, th{
 }
 
 .table-responsive
-{
-	
+{	
 	margin-left: 0px;
 	margin-right: 0px;
 	margin-top: 20px;
-}
-
-h2{
-	text-align: center;
-	padding-bottom: 20px;
 }
 
 .modal-list-item{
