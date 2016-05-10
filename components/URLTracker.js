@@ -12,8 +12,8 @@ var URLTracker = React.createClass({
     getNumVisits() {
       var tbID = "#trackForm";
       var url = $("#trackURL").val().trim();
-      console.log('calling');
-      var isValid = helpers.isValidCustomExtension("#trackURL");
+      // console.log('calling');
+      var isValid = true;//helpers.isValidCustomExtension("#trackURL");
       if(!isValid)
       {
         $(tbID).addClass("has-error");

@@ -27,6 +27,10 @@ h2{
 	border: none;
 }
 
+.panel-heading{
+	padding-bottom: 25px;
+}
+
 .table-responsive
 {	
 	margin-left: 0px;
