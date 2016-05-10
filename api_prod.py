@@ -43,7 +43,9 @@ def createCustomURL():
             customURL = False
         else:
             customURL = host + custom_url
-        return jsonify({'url': customURL})
+        
+        res = {'sourceURL':original_url, "shortURL": customURL}
+        return jsonify({'url': res})    
 
 # get last 100 urls that were inserted
 @app.route('/getLastHundred', methods=['GET'])
@@ -61,7 +63,6 @@ def getLastHundred():
 @app.route('/getTopTen', methods=['GET'])
 def getTopTen():
     conn, cursor = getConnObjects(mysql)
-    
     res = cache.get('topten')
     if res is None:       
         print 'Cached'
@@ -97,6 +98,7 @@ def trackURLInfo():
         shortURL = data['url']
         encodedStr = shortURL[len(host):len(shortURL)]
 
+        urlID = -1
         # Check if only custom extension given as input
         if shortURL in customURLDict:
             urlID = customURLDict[shortURL]
@@ -132,7 +134,8 @@ def getShortURL():
             original_url = 'http://' + original_url
 
         shortURL = insertURL(original_url)
-        return jsonify({'url': shortURL})
+        res = {'sourceURL':original_url, "shortURL": shortURL}
+        return jsonify({'url': res})
 
 # Routing method retrieves original url and redirects browser to it -> increments visit count by 1
 @app.route('/<shortURL>')

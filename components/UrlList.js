@@ -2,7 +2,7 @@ var React = require('react');
 
 function UrlList (props){
 	var index = 0;
-	let listOfUrls = props.urls.map(url => <ShortURL key={index++} url={url} />);
+	let listOfUrls = props.urls.map(url => <ShortURL key={index++} sourceURL={url.sourceURL} shortURL={url.shortURL} />);
 	return(
 		<div className="panel panel-default">
 			<div className="col-xs-1 col-sm-1 col-md-1"></div>
@@ -20,9 +20,16 @@ function ShortURL(props)
 {
 	return (
 		<li className="list-group-item">
-			<a target='_blank' href={props.url}>
-				{props.url}
-			</a>
+			<div className="row">
+				<div className="col-xs-12 col-md-6">
+						<a className="listLink" target='_blank' href={props.shortURL}>
+							{props.shortURL}
+						</a>
+				</div>		
+				<div className="col-xs-12 col-md-6">						
+							{props.sourceURL}						
+				</div>
+			</div>
 		</li>
 		);
 }

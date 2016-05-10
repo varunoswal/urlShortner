@@ -32,7 +32,7 @@ var URLCustomizer = React.createClass({
         helpers.removeErrorClass(tbID2);
         helpers.createCustomURL(sourceURL, customURL)
           .then(data => {              
-              if (data['url'] !== false)
+              if (data['url'].shortURL !== false)
               {
                 this.setState({
                   urlList:[data['url'], ...this.state.urlList]

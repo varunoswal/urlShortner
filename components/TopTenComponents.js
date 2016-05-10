@@ -1,6 +1,5 @@
 var React = require('react');
 var helpers = require('../helpers/helpers');
-
 var TopTenTable = React.createClass({
   getInitialState() {
     return {
@@ -52,7 +51,8 @@ var TopTenTable = React.createClass({
 });
 
 function TableRow(props){
-  let link = window.ipAddress + "/" + props.id;
+  var ipAddress = "http://52.37.140.113";
+  let link = ipAddress + "/" + props.id;
   return(
         <tr id={"row" + props.rowIndex}>
           <td className="rowItem"><a target="_blank" href={link}>{"short.ly/"+props.id}</a></td>

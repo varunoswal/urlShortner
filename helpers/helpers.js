@@ -1,7 +1,8 @@
 var axios = require('axios');
 var XRegExp = require('xregexp');
-// var ipAddress = "http://localhost:5000";
-var ipAddress = "http://52.37.140.113";
+var ipAddress = "http://localhost:5000";
+// var ipAddress = "http://52.37.140.113";
+
 var helpers = {
     // modify with classnames package from npm
     removeErrorClass(id){
