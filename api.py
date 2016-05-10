@@ -19,8 +19,8 @@ app.config['MYSQL_DATABASE_HOST'] = dbInfo[1]
 app.config['MYSQL_DATABASE_USER'] = dbInfo[2]
 app.config['MYSQL_DATABASE_PASSWORD'] = dbInfo[3]
 mysql.init_app(app)
-host = 'http://10.0.1.12/'
-# host = 'http://localhost:5000/'
+# host = 'http://10.0.1.12/'
+host = 'http://localhost:5000/'
 # host = 'http://52.37.140.113/'
 CORS(app)
 
@@ -152,5 +152,5 @@ def useShortURL(shortURL):
     return render_template('index.html')
 
 if __name__ == '__main__':
-    # app.run(debug=True)
-    app.run(host='0.0.0.0', port=80, debug=True)
+    app.run(debug=True)
+    # app.run(host='0.0.0.0', port=80, debug=True)

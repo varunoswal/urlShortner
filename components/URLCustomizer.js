@@ -3,7 +3,6 @@ var UrlList = require("./UrlList");
 var helpers = require('../helpers/helpers');
 var {Form, FormTextBox, FormButton} = require("./FormComponents");
 
-// Can Improve
 var URLCustomizer = React.createClass({
   getInitialState:function(){
     return {
@@ -14,22 +13,18 @@ var URLCustomizer = React.createClass({
   insertCustURL() {
       var tbID = "#urlInput1";
       var tbID2 = "#urlInput2";
-      var sourceURL = $("#sourceURL").val();
-      var customURL= $("#custURL").val();
-      var isValid = helpers.isValidURL(sourceURL);
+      var sourceURL = $("#sourceURL").val().trim();
+      var customURL= $("#custURL").val().trim();
+      var isValid = helpers.isValidURL("#sourceURL");
       
       if(!isValid)
       {
-          helpers.popErrMsg("#sourceURL", "Invalid URL: No spaces or symbols allowed");
           $(tbID).addClass("has-error");
       }
-      else if(!helpers.isValidCustomExtension(customURL))
-      {
-        helpers.popErrMsg("#custURL", "Invalid Custom Extension: No spaces or symbols allowed");
+      else if(!helpers.isValidCustomExtension("#custURL"))
+      {        
+        helpers.removeErrorClass(tbID);
         $(tbID2).addClass("has-error");
-
-        if (isValid)
-            helpers.removeErrorClass(tbID);
       }
       else
       {
@@ -41,7 +36,6 @@ var URLCustomizer = React.createClass({
                 urlList:[data['url'], ...this.state.urlList]
               });
           });
-
       }
   },
 

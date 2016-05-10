@@ -2,7 +2,6 @@ var React = require('react');
 var helpers = require('../helpers/helpers');
 var {Form, FormTextBox, FormButton} = require("./FormComponents");
 
-// Not First
 var URLTracker = React.createClass({
     getInitialState(){
         return{
@@ -13,17 +12,15 @@ var URLTracker = React.createClass({
     getNumVisits() {
       var tbID = "#trackForm";
       var url = $("#trackURL").val().trim();
-      var isValid = helpers.isValidURL(url);
-
+      console.log('calling');
+      var isValid = helpers.isValidURL("#trackURL");
       if(!isValid)
       {
-        helpers.popErrMsg("#trackURL", "Invalid URL: No spaces or symbols allowed");
         $(tbID).addClass("has-error");
       }
       else
       {
         helpers.removeErrorClass(tbID);
-
         helpers.trackVisits(url)
             .then(data => {
                 if(data['url_info'] != null)
@@ -40,22 +37,22 @@ var URLTracker = React.createClass({
                 }
             });
       }  
-  },
+    },
 
-  render(){
-    let urlInfo = this.state.urlInfo;
-    let inputUrl = $("#trackURL").val();
-    return (
-      <div className="jumbotron visitForm">
-        <h2>URL Tracker</h2>
-        <Form formID="trackForm" formGroupID="urlInput">
-          <FormTextBox tbID="trackURL" placeholder="Enter short URL to track visits" />
-          <FormButton btnID="trackBtn" onBtnAction={this.getNumVisits} btnLabel="Track" />
-        </Form>
-        <TextBoxModal id='visitModal' header='URL Info' urlInfo={urlInfo} inputUrl={inputUrl} />
-      </div>
-    )
-  }
+    render(){
+      let urlInfo = this.state.urlInfo;
+      let inputUrl = $("#trackURL").val();
+      return (
+        <div className="jumbotron visitForm">
+          <h2>URL Tracker</h2>
+          <Form formID="trackForm" formGroupID="urlInput">
+            <FormTextBox tbID="trackURL" placeholder="Enter short URL to track visits" />
+            <FormButton btnID="trackBtn" onBtnAction={this.getNumVisits} btnLabel="Track" />
+          </Form>
+          <TextBoxModal id='visitModal' header='URL Info' urlInfo={urlInfo} inputUrl={inputUrl} />
+        </div>
+      )
+    }
 });
 
 function TextBoxModal(props){

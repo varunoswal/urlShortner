@@ -24,15 +24,29 @@ body, th{
 
 .table-responsive
 {
-	margin: 20px;
+	
+	margin-left: 0px;
+	margin-right: 0px;
+	margin-top: 20px;
 }
 
 h2{
 	text-align: center;
-	padding-bottom: 50px;
+	padding-bottom: 20px;
 }
 
 .modal-list-item{
 	text-align: left;
 	list-style-type: none;
+}
+
+.btn-link:hover, .btn-link:focus {
+    text-decoration: none;
+}
+
+@media only screen and (max-width: 768px) {
+	.formBtn{
+		margin-top:10px;
+		margin-bottom:10px;
+	}
 }

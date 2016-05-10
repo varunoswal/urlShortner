@@ -2,16 +2,17 @@ var React = require('react');
 
 // Form Container - Holds markup for child components
 function Form(props){
-  // console.log(props.children);
   return (
     <div className="container center-block" id={props.formID}>
       <div className="form-group" id={props.formGroupID}>
-        <div className="col-xs-1 col-sm-1 col-md-2"></div>
-        <div className="col-xs-8 col-sm-8 col-md-7">
+        <div className="col-xs-1 col-sm-1 col-md-1"></div>
+        <div className="col-xs-12 col-sm-10 col-md-9">
           {props.children[0]}
         </div>
-        <div className="col-xs-1 col-sm-1 col-md-1">
-          {props.children[1]}
+        <div className="col-xs-12 col-sm-1 col-md-1">
+          <div className="col-xs-12">            
+            {props.children[1]}
+          </div>  
         </div>
       </div>
     </div>
@@ -20,7 +21,7 @@ function Form(props){
 
 function FormButton(props){
   return(
-      <button type="button" className="btn btn-md btn-info" 
+      <button type="button" className="btn btn-md btn-info formBtn" 
         id={props.btnID} 
         onClick={() => {props.onBtnAction()}}>
         {props.btnLabel}

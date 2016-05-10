@@ -7,29 +7,18 @@ var {Form, FormTextBox, FormButton} = require("./FormComponents");
 var URLShortner = React.createClass({
   getInitialState(){
     // local storage urls
-    // short url on current pange
     return{
       urlList:[]
     };
   },
-  
-  componentWillMount(){
-    // Function naming paradigm: prop -> onSubmitUser={this.handleSubmitUser} onHandleUser={this.handleHandleUser}
 
-    // REGEXP function that fits needs of all 3 components **** 
-
-    // get past urls from local storage if exists and state component state
-  },
-
-  // Can IMPROVE
   shortenURL() {
     var formID = "#shortForm";
     var url = $("#userURL").val().trim();
-    let isValid = helpers.isValidURL(url);
+    var isValid = helpers.isValidURL("#userURL");
 
     if(!isValid)
     {
-      helpers.popErrMsg('#userURL', "Invalid URL: No spaces or symbols allowed");
       $(formID).addClass("has-error");  
     }
     else
