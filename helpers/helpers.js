@@ -29,7 +29,7 @@ var helpers = {
     },
 
     trackVisits(url){
-        let apiPath =  ipAddress+'/trackURLInfo';
+        let apiPath =  ipAddress+'/trackInfo/'+url;
         axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
         var config = {
             headers: {
@@ -37,12 +37,11 @@ var helpers = {
                 'Accept': 'application/json'
             }
         };
-        return axios.post(apiPath,
-            {url: url},
+        return axios.get(apiPath,
             config
             )
             .then(function (response) {
-                // console.log(response);
+                console.log(response);
                 return response.data;
             })
             .catch(function (response) {
@@ -121,8 +120,8 @@ var helpers = {
         return true;    
     },
 
-    getShortURL (url) {
-        let apiPath =  ipAddress+'/getShortURL';
+    getShortURL(url){
+        let apiPath =  ipAddress+'/shortURL';
         axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
         var config = {
             headers: {
@@ -135,7 +134,7 @@ var helpers = {
             config
             )
             .then(function (response) {
-                // console.log(response);
+                console.log(response);
                 return response.data;
             })
             .catch(function (response) {
@@ -144,7 +143,7 @@ var helpers = {
     },
 
     createCustomURL (sourceURL, customURL) {
-        let apiPath =  ipAddress+'/createCustomURL';
+        let apiPath =  ipAddress+'/customURL';
         axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
         var config = {
             headers: {
@@ -157,7 +156,7 @@ var helpers = {
             config
             )
             .then(function (response) {
-                // console.log(response);
+                console.log(response);
                 return response.data;
             })
             .catch(function (response) {
@@ -166,14 +165,14 @@ var helpers = {
     },
 
     getTopTen(){
-        let apiPath =  ipAddress+'/getTopTen';
+        let apiPath =  ipAddress+'/topTen';
 
         return axios({
             method: 'get',
             url: apiPath,
         })
         .then(function (response) {
-            // console.log(response);
+            console.log(response);
             return response.data;
         })
         .catch(function (response) {
